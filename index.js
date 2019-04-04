@@ -23,7 +23,7 @@ app.set('view engine', 'handlebars');
 app.get('/', (req, res) => res.redirect('/petition/'))
 
 app.get('/petition/', (req, res) => {
-    if(!req.session.hasSigned) { //////////////// turn back to !
+    if(!req.session.hasSigned) {
         res.render('sign', {
             layout: 'petitionAll'
         })

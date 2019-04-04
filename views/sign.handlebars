@@ -11,11 +11,10 @@
         <label for="last">last name</label>
         <input type="hidden" name="signature">
         <canvas id="signature" width="500" height="100"></canvas>
-        <label for="signature">sign please</label>
+        <label for="signature">sign please (double tab to reset field..)</label>
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         <button type="submit" name="petition-submit">submit</button>
     </form>
-    <canvas id="canvas-dot" width="2" height="2"></canvas>
 </div>
 
 {{> deco}}

@@ -1,0 +1,48 @@
+* {
+    margin: 0;
+    box-sizing: border-box;
+    font-family: monospace;
+    color: ghostwhite;
+}
+
+body {
+    background: green;
+}
+
+section {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+input {
+    background: rgba(255, 255, 255, 0.3);
+    border: none;
+    border-radius: 3px;
+}
+img {
+    height: 400px;
+    width: auto;
+}
+
+canvas {
+    border: 1px dashed rgba(255, 255, 255, 0.3);
+    cursor: crosshair;
+}
+
+button {
+    background: limegreen;
+    border: none;
+    border-radius: 3px;
+    opacity: 0.9;
+}
+
+#user-signed-img {
+    width: 500px;
+    height: 200px;
+}

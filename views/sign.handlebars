@@ -1,0 +1,21 @@
+<div class="introduction">
+    <h1>hey you.. join the cause!</h1>
+    <h2>we petition against anything!</h2>
+</div>
+
+<div class="content">
+    <form class="" action="/petition/" method="post" enctype="application/x-www-form-urlencoded">
+        <input type="text" name="first">
+        <label for="first">first name</label>
+        <input type="text" name="last">
+        <label for="last">last name</label>
+        <input type="hidden" name="signature">
+        <canvas id="signature" width="500" height="100"></canvas>
+        <label for="signature">sign please</label>
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <button type="submit" name="petition-submit">submit</button>
+    </form>
+    <canvas id="canvas-dot" width="2" height="2"></canvas>
+</div>
+
+{{> deco}}

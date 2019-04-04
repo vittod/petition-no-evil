@@ -1,5 +1,5 @@
 * {
-    margin: 0;
+    margin: 10px;
     box-sizing: border-box;
     font-family: monospace;
     color: ghostwhite;
@@ -9,7 +9,7 @@ body {
     background: green;
 }
 
-section {
+section, .content {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -24,15 +24,40 @@ input {
     background: rgba(255, 255, 255, 0.3);
     border: none;
     border-radius: 3px;
+        box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.3);
 }
-img {
-    height: 400px;
+.campagin-deco img {
+    position: relative;
+    height: 454px;
     width: auto;
+    left: -11px;
+    top: -52px;
+}
+.campagin-deco-2 img {
+    position: relative;
+    height: 454px;
+    width: auto;
+    left: -209px;
+    top: -141px;
+}
+
+.campagin-deco, .campagin-deco-2 {
+    height: 300px;
+    width: 300px;
+    overflow: hidden;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.3);
 }
 
 canvas {
+    background: rgba(255, 255, 255, 0.3);
     border: 1px dashed rgba(255, 255, 255, 0.3);
     cursor: crosshair;
+    box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.3);
+}
+#canvas-dot {
+    display: none;
 }
 
 button {
@@ -40,6 +65,7 @@ button {
     border: none;
     border-radius: 3px;
     opacity: 0.9;
+    box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.3);
 }
 
 #user-signed-img {

@@ -23,7 +23,6 @@ app.set('view engine', 'handlebars');
 app.get('/', (req, res) => res.redirect('/petition/'))
 
 app.get('/petition/', (req, res) => {
-    console.log(req.session.hasSigned);
     if(!req.session.hasSigned) { //////////////// turn back to !
         res.render('sign', {
             layout: 'petitionAll'
@@ -43,10 +42,10 @@ app.post('/petition/', (req, res) => {
             })
             .catch((err) => {
                 console.log('dc signature insert err:', err);
-                res.redirect('/wrong')              ///// maybe make a real 404 site
+                res.redirect('/wrong/')
             });
     } else {
-        res.redirect('/petition/');
+        res.redirect('/wrong/');
     }
 
 })
@@ -84,8 +83,16 @@ app.get('/signers/', (req, res) => {
 
 app.use(express.static(__dirname + '/public/'))
 
+app.get('/wrong/', (req, res) => {
+    res.status(403).render('wrong', {
+        layout: 'petitionAll'
+    });
+})
+
 app.get('*', (req, res) => {
-    res.status(404).end('<h1>404</h1>');
+    res.status(404).render('404', {
+        layout: 'petitionAll'
+    });
 })
 
 

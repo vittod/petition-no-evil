@@ -36,6 +36,17 @@ input {
 label {
     align-self: flex-start;
 }
+.logout {
+    align-self: flex-end;
+}
+
+.logout-link {
+    text-decoration: none;
+}
+.logout:hover {
+    opacity: 0.7;
+}
+
 .campagin-deco img {
     position: relative;
     height: 454px;
@@ -77,6 +88,10 @@ button {
     border-radius: 3px;
     opacity: 0.9;
     box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.3);
+}
+
+p.message {
+    color: gold;
 }
 
 #user-signed-img {

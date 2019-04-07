@@ -1,14 +1,13 @@
+{{> logout}}
 <div class="introduction">
     <h1>hey you.. join the cause!</h1>
     <h2>we petition against anything!</h2>
 </div>
-
+<div class="indi-address">
+    <em><h4>Hello {{user.first}} {{user.last}}. to support the movement you need to sign here..</h4> </em>
+</div>
 <div class="content">
-    <form class="" action="/petition/" method="post" enctype="application/x-www-form-urlencoded">
-        <input type="text" name="first">
-        <label for="first">first name</label>
-        <input type="text" name="last">
-        <label for="last">last name</label>
+    <form class="" action="/sign/" method="post" enctype="application/x-www-form-urlencoded">
         <input type="hidden" name="signature">
         <canvas id="signature" width="500" height="100"></canvas>
         <label for="signature">sign please (double tab to reset field..)</label>

@@ -1,9 +1,10 @@
+{{> logout}}
 <div class="introduction">
     <h1>you did it..</h1>
 </div>
 
 <div class="content">
-    <p>..well, ahm.. great, I guess.. so, here's your signature:</p>
+    <p>..well, {{user.first}}, ahm.. great, I guess.. so, here's your signature:</p>
     <div class="user-sig">
         <img src="{{userSig}}" alt="" id="user-signed-img">
     </div>

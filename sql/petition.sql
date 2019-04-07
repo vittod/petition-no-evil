@@ -18,8 +18,8 @@ CREATE TABLE signatures (
     FOREIGN KEY (id_user_fkey) REFERENCES users(id_user)
 );
 
-INSERT INTO users (first_name, last_name, email, password) VALUES
-    ('azerimuth', 'bandistan', 'azze@band.star', 'xxxxxx');
+--INSERT INTO users (first_name, last_name, email, password) VALUES
+--    ('azerimuth', 'bandistan', 'azze@band.star', 'xxxxxx');
 
-INSERT INTO signatures (id_user_fkey, signature) VALUES
-    (1, 'azerimuth bandistan');
+--INSERT INTO signatures (id_user_fkey, signature) VALUES
+--    (1, 'azerimuth bandistan');

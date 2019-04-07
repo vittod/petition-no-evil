@@ -1,5 +1,4 @@
 const bc = require('bcryptjs')
-const bcrypt = require('bcryptjs')
 
 exports.hashPass = (rawPass) => {
     return new Promise((resolve, reject) => {

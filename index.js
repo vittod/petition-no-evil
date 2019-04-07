@@ -1,6 +1,6 @@
 const express = require('express');
 const hb = require('express-handlebars');
-const {addSignature, findSignature, allSignatures, getUserByEmail, postUser, checkUser} = require('./utility/db');
+const {postSignature, getSignature, getSignatureAll, getUserByEmail, getUserById, postUser, checkUser} = require('./utility/db');
 const bodyParser = require('body-parser');
 const cs = require('cookie-session');
 const csurf = require('csurf')
@@ -19,17 +19,27 @@ app.use((req, res, next) => {
 app.engine('handlebars', hb());
 app.set('view engine', 'handlebars');
 
-//
-//  /////////// TODO app crashes when cookie driven redirect occurs afert reg and login..
-//
 
+const wall = (req, res, next) => {
+    if (req.session.isLoggedIn){
+        next();
+    } else {
+        res.redirect('/register/')
+    }
+}
 
-app.get('/', (req, res) => res.redirect('/register/'))
+app.use(express.static(__dirname + '/public/'))
+
+app.get('/', (req, res) => {
+    console.log('user:', req.session.isLoggedIn);
+    if (req.session.isLoggedIn) {
+        res.redirect('/sign/')
+    } else {
+        res.redirect('/register/')
+    }
+})
 
 app.get('/register/', (req, res) => {
-    // if (req.session.isLoggedIn) {
-    //     res.redirect('/petition/')
-    // }
     res.render('register', {
         layout: 'petitionAll'
     })
@@ -65,11 +75,11 @@ app.post('/register/', (req, res) => {
     }
 })
 
-
 app.get('/login/', (req, res) => {
-    // if (req.session.isLoggedIn) {
-    //     res.redirect('/petition/')
-    // }
+    console.log(req.session.isLoggedIn);
+    if (req.session.isLoggedIn) {
+        res.redirect('/sign/')
+    }
     res.render('login', {
         layout: 'petitionAll'
     })
@@ -79,12 +89,23 @@ app.post('/login/', (req, res) => {
         getUserByEmail(req.body.email)
             .then(user => {
                 if (user.rows.length) {
-                    console.log(user.rows);
+                    console.log('login',user.rows);
                     checkUser(req.body.pass, user.rows[0].password)
                         .then(passValid => {
                             if (passValid) {
-                                req.session.isLoggedIn = true;
-                                res.redirect('/petition/')
+                                req.session.isLoggedIn = {
+                                    id: user.rows[0].id_user,
+                                    first: user.rows[0].first_name,
+                                    last: user.rows[0].last_name
+                                };
+                                getSignature(req.session.isLoggedIn.id)
+                                    .then(sig => {
+                                        if (sig.rows.length > 0) {
+                                            req.session.hasSigned = true;
+                                        }
+                                        res.redirect('/sign/')
+                                    })
+                                    .catch(err => console.log('db sign q err', err))
                             } else {
                                 res.render('login', {
                                     layout: 'petitionAll',
@@ -96,7 +117,7 @@ app.post('/login/', (req, res) => {
                 } else {
                     res.render('login', {
                         layout: 'petitionAll',
-                        msg: 'user not found'
+                        msg: 'no such user / password'
                     })
                 }
             })
@@ -112,37 +133,26 @@ app.post('/login/', (req, res) => {
     }
 })
 
-app.use(express.static(__dirname + '/public/'))
-
-app.get('/wrong/', (req, res) => {
-    res.status(403).render('wrong', {
-        layout: 'petitionAll'
-    });
-})
 
 
-app.use((req, res, next) => {
-    if (!req.session.isLoggedIn){
-        res.redirect('/register/')
-    }
-    next();
-})
-
-app.get('/petition/', (req, res) => {
+app.get('/sign/', wall, (req, res) => {
     if(!req.session.hasSigned) {
         res.render('sign', {
-            layout: 'petitionAll'
+            layout: 'petitionAll',
+            user: req.session.isLoggedIn
         })
     } else {
         res.redirect('/signed/')
     }
 })
-app.post('/petition/', (req, res) => {
-    if (req.body.first && req.body.last && req.body.signature) {
-        postSignature(req.body.first, req.body.last, req.body.signature)
+app.post('/sign/', wall, (req, res) => {
+    if (req.body.signature) {
+        console.log(req.session.isLoggedIn);
+        postSignature(req.body.signature, req.session.isLoggedIn.id)
             .then((data) => {
-                console.log('new db insert, id:', data.rows[0].id);
-                req.session.hasSigned = data.rows[0].id;
+                console.log(req.session.isLoggedIn);
+                console.log('new db insert, id:', data.rows[0].id_sig);
+                req.session.hasSigned = true;
                 res.redirect('/signed/')
             })
             .catch((err) => {
@@ -152,38 +162,60 @@ app.post('/petition/', (req, res) => {
     } else {
         res.redirect('/wrong/');
     }
-
 })
 
-app.get('/signed/', (req, res) => {
+app.get('/signed/', wall, (req, res) => {
     if (req.session.hasSigned) {
-        getSignature(req.session.hasSigned).then((data) => {
+        getSignature(req.session.isLoggedIn.id)
+        .then((data) => {
             res.render('signed', {
                 layout:'petitionAll',
-                userSig: data.rows[0].signature
+                userSig: data.rows[0].signature,
+                user: req.session.isLoggedIn
             })
-        })
+        }).catch(err => console.log('failed to get sig of db:', err))
 
     } else {
         res.redirect('/sign/')
     }
 })
 
-app.get('/signers/', (req, res) => {
+app.get('/signers/', wall, (req, res) => {
     if (req.session.hasSigned) {
         getSignatureAll()
-            .then((data) => {
-                let signees = data.rows.map(el => ({firstName: el.first_name, lastName: el.last_name}))
-                res.render('signers', {
-                    layout:'petitionAll',
-                    userSig: data.rows[0].signature,
-                    name: signees,
-            })
+            .then((sigs) => {
+                console.log('all sigs', sigs.rows[0].id_user_fkey);
+                let signees = sigs.rows.map(el => getUserById(el.id_user_fkey));
+                console.log(signees);
+                Promise.all(signees)
+                    .then(sigUsers => {
+                        //console.log('promis result:', sigUsers.rows);
+                        let signeeNames = sigUsers.map(el => el.rows).map(el => ({firstName: el[0].first_name, lastName: el[0].last_name}))
+                        console.log('mapped rows', signeeNames);
+                        res.render('signers', {
+                            layout:'petitionAll',
+                            name: signeeNames,
+                        })
+                    })
+                    .catch(err => console.log('promise all, get sigUser failed:', err))
+
         })
+        .catch(err => console.log('could not load signed useres:', err))
 
     } else {
         res.redirect('/sign/')
     }
+})
+
+app.get('/logout/', (req, res) => {
+    req.session = null;
+    res.redirect('/login/')
+})
+
+app.get('/wrong/', (req, res) => {
+    res.status(403).render('wrong', {
+        layout: 'petitionAll'
+    });
 })
 
 app.get('*', (req, res) => {

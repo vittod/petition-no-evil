@@ -6,17 +6,17 @@
 <div class="content">
     <form class="" action="/register/" method="post" enctype="application/x-www-form-urlencoded">
         <input type="text" name="first">
-        <label for="first">first name</label>
+        <label for="first">first name *</label>
         <input type="text" name="last">
-        <label for="last">last name</label>
+        <label for="last">last name *</label>
         <input type="email" name="email">
-        <label for="email">your email</label>
+        <label for="email">your email *</label>
         <input type="password" name="pass">
-        <label for="password">choose password</label>
+        <label for="password">choose password *</label>
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         <button type="submit" name="register-submit">register</button>
     </form>
-    <p>{{msg}}</p>
+    <p class="message">{{msg}}</p>
     <p>are you already registered? <a href="/login">go to login page</a> </p>
 </div>
 

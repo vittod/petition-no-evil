@@ -1,12 +1,15 @@
 {{> logout}}
+<div class="signers">
 
-{{#name}}
-    {{#if userUrl}}
-        <h3><a href="{{userUrl}}" target="_blank">{{firstName}} {{lastName}}</a> {{age}} <a href="signers/{{city}}">{{city}}</a> </h3>
-    {{else}}
-        <h3>{{firstName}} {{lastName}} {{age}} <a href="signers/{{city}}">{{city}}</a> </h3>
-    {{/if}}
-{{/name}}
+    {{#name}}
+        {{#if userUrl}}
+            <h3><a href="{{userUrl}}" target="_blank">{{firstName}} {{lastName}}</a> {{age}} <a href="signers/{{city}}">{{city}}</a> </h3>
+        {{else}}
+            <h3>{{firstName}} {{lastName}} {{age}} <a href="signers/{{city}}">{{city}}</a> </h3>
+        {{/if}}
+    {{/name}}
+
+</div>
 
 <p><h1>have a nice movement, anyway!</h1></p>
 <p><a href="/signed">wanna see your signature again?</a></p>

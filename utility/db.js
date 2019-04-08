@@ -32,13 +32,13 @@ exports.getSignatureAll = () => {
 
 exports.getSignatureJoinAll = () => {
     let params = [];
-    let q = `SELECT first_name AS "firstName", last_name AS "lastName", email, city, url AS "userUrl", age from signatures JOIN profiles ON signatures.id_user_fkey = profiles.id_user_fkey JOIN users ON signatures.id_user_fkey = users.id_user;`;
+    let q = `SELECT first_name AS "firstName", last_name AS "lastName", email, city, url AS "userUrl", age from signatures FULL JOIN profiles ON signatures.id_user_fkey = profiles.id_user_fkey FULL JOIN users ON signatures.id_user_fkey = users.id_user;`;
     return db.query(q, params)
 }
 
 exports.getSigCityJoin = (city) => {
     let params = [city];
-    let q = `SELECT first_name AS "firstName", last_name AS "lastName", email, city, url AS "userUrl", age from signatures JOIN profiles ON signatures.id_user_fkey = profiles.id_user_fkey JOIN users ON signatures.id_user_fkey = users.id_user WHERE city = $1;`;
+    let q = `SELECT first_name AS "firstName", last_name AS "lastName", email, city, url AS "userUrl", age from signatures JOIN profiles ON signatures.id_user_fkey = profiles.id_user_fkey JOIN users ON signatures.id_user_fkey = users.id_user WHERE LOWER(city) = LOWER($1);`;
     return db.query(q, params)
 }
 

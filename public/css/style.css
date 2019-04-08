@@ -9,11 +9,15 @@ body {
     background: green;
 }
 
-section, .content {
+section, .content, .signers {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
+}
+
+.signers > h3 > a {
+    margin: 0;
 }
 
 .introduction {
@@ -46,6 +50,7 @@ label {
 .logout:hover {
     opacity: 0.7;
 }
+
 
 .campagin-deco img {
     position: relative;

@@ -1,0 +1,23 @@
+{{> logout}}
+
+<div class="introduction">
+    <h1>we petition against anything!</h1>
+    <h2>we'd love to know more about you!</h2>
+</div>
+
+<div class="content">
+    <form class="" action="/profile/" method="post" enctype="application/x-www-form-urlencoded">
+        <input type="text" name="city">
+        <label for="city">your city</label>
+        <input type="text" name="age">
+        <label for="age">your age</label>
+        <input type="text" name="userUrl" placeholder="http..">
+        <label for="userUrl">your website</label>
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <button type="submit" name="register-submit">continue</button>
+    </form>
+    <p class="message">{{msg}}</p>
+    <p>in case you don't like to share, feel free to just continue..</p>
+</div>
+
+{{> deco}}

@@ -9,11 +9,12 @@
         <img src="{{userSig}}" alt="" id="user-signed-img">
     </div>
     <p>whatever.. </p>
-    <form class="" action="/delete/" method="post" enctype="application/x-www-form-urlencoded">
+    <form class="signers" action="/delete/" method="post" enctype="application/x-www-form-urlencoded">
         <a href="/signers">here're some of your co-signees</a>
         <a href="/edit-profile">edit your profile</a>
-        <button type="submit" name="delete" value="signature">withdraw support and delete signature</button>
-        <button type="submit" name="delete" value="account">delete petition account</button>
+        <div class="line"></div>
+        <button type="submit" name="delete" value="signature">withdraw support and delete signature <i class="fas fa-times-circle"></i></button>
+        <button type="submit" name="delete" value="account">delete petition account <i class="fas fa-times-circle"></i></button>
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
     </form>
 </div>

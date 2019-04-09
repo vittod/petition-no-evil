@@ -34,11 +34,11 @@ exports.getSignatureAll = () => {
 
 exports.getSignatureJoinAll = () => {
     let params = [];
-    let q = `   SELECT first_name AS "firstName", last_name AS "lastName", email, city, url AS "userUrl", age
+    let q = `   SELECT first_name AS "firstName", last_name AS "lastName", email, city, url AS "userUrl", age, id_user, id_sig
                 FROM signatures
-                FULL JOIN profiles
+                LEFT JOIN profiles
                 ON signatures.id_user_fkey = profiles.id_user_fkey
-                FULL JOIN users
+                LEFT JOIN users
                 ON signatures.id_user_fkey = users.id_user;`;
     return db.query(q, params)
 }
@@ -116,8 +116,7 @@ exports.postProfile = (city, age, urlInput, userId) => {
 exports.updateProfile = function(userId, first, last, email, age, city, url, rawPass) {
     let params_2 = Array.prototype.slice.call(arguments).slice(1);
     let params_1 = params_2.splice(0, 3);
-    // console.log('para 1', params_1);
-    // console.log('para 2', params_2);
+
     let q = `   INSERT INTO profiles (age, city, url, id_user_fkey)
                 VALUES ($1, $2, $3, ${userId})
                 ON CONFLICT (id_user_fkey)
@@ -132,11 +131,9 @@ exports.updateProfile = function(userId, first, last, email, age, city, url, raw
     } else {
         return hb.hashPass(rawPass)
             .then(hash => {
-                // console.log('new hash', hash);
                 params_2.pop();
-                // console.log('new para 2', params_2);
                 return Promise.all([
-                    db.query(`   UPDATE users SET first_name = $1, last_name = $2, email = $3, password = '${hash}'
+                    db.query(`  UPDATE users SET first_name = $1, last_name = $2, email = $3, password = '${hash}'
                                 WHERE id_user = ${userId};`, params_1),
                     db.query(q, params_2)
                 ])

@@ -95,6 +95,22 @@ button {
     box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.3);
 }
 
+.signers button {
+    min-width: 350px;
+    background: none;
+    box-shadow: none;
+    text-decoration: underline;
+    font-size: 13px;
+    opacity: 1;
+    cursor: pointer;
+}
+
+.line {
+    width: 30px;
+    border-bottom: 1px solid ghostwhite;
+    padding-top: 15px;
+}
+
 p.message {
     color: gold;
 }

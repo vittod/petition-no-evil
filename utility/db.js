@@ -6,7 +6,9 @@ const uif = require('./userInputFormatter');
 const db = spicedPg('postgres://marcuswagner:postgres@localhost:5432/petition')
 
 exports.postSignature = (signature, userId) => {
-    let q = `INSERT INTO signatures (signature, id_user_fkey) VALUES ($1, $2) RETURNING id_sig;`;
+    let q = `   INSERT INTO signatures (signature, id_user_fkey)
+                VALUES ($1, $2)
+                RETURNING id_sig;`;
     let params = [signature, userId];
     return db.query(q, params)
 }
@@ -32,13 +34,24 @@ exports.getSignatureAll = () => {
 
 exports.getSignatureJoinAll = () => {
     let params = [];
-    let q = `SELECT first_name AS "firstName", last_name AS "lastName", email, city, url AS "userUrl", age from signatures FULL JOIN profiles ON signatures.id_user_fkey = profiles.id_user_fkey FULL JOIN users ON signatures.id_user_fkey = users.id_user;`;
+    let q = `   SELECT first_name AS "firstName", last_name AS "lastName", email, city, url AS "userUrl", age
+                FROM signatures
+                FULL JOIN profiles
+                ON signatures.id_user_fkey = profiles.id_user_fkey
+                FULL JOIN users
+                ON signatures.id_user_fkey = users.id_user;`;
     return db.query(q, params)
 }
 
 exports.getSigCityJoin = (city) => {
     let params = [city];
-    let q = `SELECT first_name AS "firstName", last_name AS "lastName", email, city, url AS "userUrl", age from signatures JOIN profiles ON signatures.id_user_fkey = profiles.id_user_fkey JOIN users ON signatures.id_user_fkey = users.id_user WHERE LOWER(city) = LOWER($1);`;
+    let q = `   SELECT first_name AS "firstName", last_name AS "lastName", email, city, url AS "userUrl", age
+                FROM signatures
+                JOIN profiles
+                ON signatures.id_user_fkey = profiles.id_user_fkey
+                JOIN users
+                ON signatures.id_user_fkey = users.id_user
+                WHERE LOWER(city) = LOWER($1);`;
     return db.query(q, params)
 }
 
@@ -51,7 +64,13 @@ exports.getUserById = (userId) => {
 
 exports.getUserDataJoin = (email) => {
     let params = [email];
-    let q = `SELECT first_name, last_name, email, password, id_user, id_profile, id_sig FROM users LEFT JOIN profiles ON users.id_user = profiles.id_user_fkey LEFT JOIN signatures ON users.id_user = signatures.id_user_fkey WHERE email = $1;`;
+    let q = `   SELECT first_name, last_name, email, password, id_user, id_profile, id_sig
+                FROM users
+                LEFT JOIN profiles
+                ON users.id_user = profiles.id_user_fkey
+                LEFT JOIN signatures
+                ON users.id_user = signatures.id_user_fkey
+                WHERE email = $1;`;
     return db.query(q, params);
 }
 
@@ -65,7 +84,9 @@ exports.postUser = (nameFirst, nameLast, email, rawPass) => {
     return hb.hashPass(rawPass)
         .then(hash => {
             console.log(hash);
-            let q = `INSERT INTO users (first_name, last_name, email, password) VALUES ($1, $2, $3, $4) RETURNING id_user`;
+            let q = `   INSERT INTO users (first_name, last_name, email, password)
+                        VALUES ($1, $2, $3, $4)
+                        RETURNING id_user`;
             let params = [nameFirst, nameLast, email, hash];
             return db.query(q, params)
         })
@@ -78,31 +99,54 @@ exports.checkUser = (rawPass, hash) => {
         .catch(err => err)
 }
 
-exports.postProfile = (city, age, urlInput, userId) => {
-    let params = [city, parseInt(age), uif.checkUrl(urlInput), userId];
-    let q = `INSERT INTO profiles (city, age, url, id_user_fkey) VALUES ($1, $2, $3, $4) RETURNING id_profile;`;
+exports.getProfileById = (userId) => {
+    let params = [userId];
+    let q = `SELECT * FROM profiles WHERE id_user_fkey = $1;`;
     return db.query(q, params)
 }
 
+exports.postProfile = (city, age, urlInput, userId) => {
+    let params = [city, parseInt(age), uif.checkUrl(urlInput), userId];
+    let q = `   INSERT INTO profiles (city, age, url, id_user_fkey)
+                VALUES ($1, $2, $3, $4)
+                RETURNING id_profile;`;
+    return db.query(q, params)
+}
+/////// leave this a funciton declaration for arguments sake! /////////////
+exports.updateProfile = function(userId, first, last, email, age, city, url, rawPass) {
+    let params_2 = Array.prototype.slice.call(arguments).slice(1);
+    let params_1 = params_2.splice(0, 3);
+    // console.log('para 1', params_1);
+    // console.log('para 2', params_2);
+    let q = `   INSERT INTO profiles (age, city, url, id_user_fkey)
+                VALUES ($1, $2, $3, ${userId})
+                ON CONFLICT (id_user_fkey)
+                DO UPDATE SET age = $1, city = $2, url = $3;`;
 
+    if (params_2.length < 4) {
+        return Promise.all([
+            db.query(`  UPDATE users SET first_name = $1, last_name = $2, email = $3
+                        WHERE id_user = ${userId};`, params_1),
+            db.query(q, params_2)
+        ])
+    } else {
+        return hb.hashPass(rawPass)
+            .then(hash => {
+                // console.log('new hash', hash);
+                params_2.pop();
+                // console.log('new para 2', params_2);
+                return Promise.all([
+                    db.query(`   UPDATE users SET first_name = $1, last_name = $2, email = $3, password = '${hash}'
+                                WHERE id_user = ${userId};`, params_1),
+                    db.query(q, params_2)
+                ])
+            })
+            .catch(err => err)
+    }
+}
 
-// expports.beginT = () {
-//     let q, params;
-//     q = 'BEGIN;';
-//     params = [];
-//     return db.query(q, params)
-// }
-//
-// expports.commitT = () {
-//     let q, params;
-//     q = 'COMMIT;';
-//     params = [];
-//     return db.query(q, params)
-// }
-//
-// expports.rollbackT = () {
-//     let q, params;
-//     q = 'ROLLBACK;';
-//     params = [];
-//     return db.query(q, params)
-// }
+exports.deleteRow = (table, column, condition) => {
+    let params = [];
+    let q = `DELETE FROM ${table} WHERE ${column} = ${condition};`;
+    return db.query(q, params)
+}

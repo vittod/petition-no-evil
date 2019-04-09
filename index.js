@@ -4,10 +4,14 @@ const db = require('./utility/db');
 const bodyParser = require('body-parser');
 const cs = require('cookie-session');
 const csurf = require('csurf');
+const sec = require('./.secret.json')
+let accountDelete = false;
 
 app = express();
+app.engine('handlebars', hb());
+app.set('view engine', 'handlebars');
 
-app.use(cs({ maxAge: 1000 * 60 * 60 * 24 * 14, secret: 'dirty little secret'}));
+app.use(cs({ maxAge: 1000 * 60 * 60 * 24 * 14, secret: sec.cookieS}));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(csurf());
 app.use((req, res, next) => {
@@ -16,16 +20,16 @@ app.use((req, res, next) => {
     next()
 });
 
-app.engine('handlebars', hb());
-app.set('view engine', 'handlebars');
-
-
 const guard = (req, res, next) => {
     if (req.session.isLoggedIn){
         next();
     } else {
         res.redirect('/register/')
     }
+}
+
+const delGuard = (req, res, next) => {
+    accountDelete ? next() : res.redirect('/signed/')
 }
 
 app.use(express.static(__dirname + '/public/'))
@@ -105,6 +109,7 @@ app.post('/login/', (req, res) => {
                                     id: user.rows[0].id_user,
                                     first: user.rows[0].first_name,
                                     last: user.rows[0].last_name,
+                                    email: user.rows[0].email,
                                     hasProf: user.rows[0].id_profile,
                                     hasSigned: user.rows[0].id_sig
                                 };
@@ -194,7 +199,7 @@ app.post('/sign/', guard, (req, res) => {
                 console.log('dc signature insert err:', err);
                 res.status(500).render('wrong', {
                     layout: 'petitionAll',
-                    msg: 'could  not write to database.'
+                    msg: 'could  not write to database. maybe try again later..'
                 });
             });
     } else {
@@ -218,7 +223,7 @@ app.get('/signed/', guard, (req, res) => {
             console.log('failed to get sig of db:', err);
             res.status(500).render('wrong', {
                 layout: 'petitionAll',
-                msg: 'could not load signature.'
+                msg: 'could not load signature. maybe try again later..'
             });
         })
 
@@ -240,7 +245,7 @@ app.get('/signers/', guard, (req, res) => {
                 console.log('could not load signed useres:', err);
                 res.status(500).render('wrong', {
                     layout: 'petitionAll',
-                    msg: 'could not load signers'
+                    msg: 'could not load signers. maybe try again later..'
                 });
             })
 
@@ -262,13 +267,117 @@ app.get('/signers/:city', guard, (req, res) => {
                 console.log('could not load signed useres:', err);
                 res.status(500).render('wrong', {
                     layout: 'petitionAll',
-                    msg: 'could not load signers.'
+                    msg: 'could not load signers. maybe try again later..'
                 });
             })
 
     } else {
         res.redirect('/sign/')
     }
+})
+
+app.get('/edit-profile/:message?*', guard, (req, res) => {
+    if (req.session.isLoggedIn.hasProf) {
+        db.getProfileById(req.session.isLoggedIn.id)
+            .then(profile => {
+                res.render('profile-edit', {
+                    layout: 'petitionAll',
+                    userProfile: {
+                        first: req.session.isLoggedIn.first,
+                        last: req.session.isLoggedIn.last,
+                        email: req.session.isLoggedIn.email,
+                        city: profile.rows[0].city,
+                        age: profile.rows[0].age,
+                        url: profile.rows[0].url
+                    },
+                    msg: req.params.message
+                })
+            })
+            .catch(err => {
+                console.log('could not get profile:', err);
+                res.status(500).render('wrong', {
+                    layout: 'petitionAll',
+                    msg: 'could not profile. maybe try again later..'
+                });
+            })
+    } else {
+        res.render('profile-edit', {
+            layout: 'petitionAll',
+            profile: {
+                first: req.session.isLoggedIn.first,
+                last: req.session.isLoggedIn.last,
+                email: req.session.isLoggedIn.email
+            },
+            msg: req.params.message
+        })
+    }
+})
+app.post('/edit-profile/', guard, (req, res) => {
+    if (req.body.pass === req.body.passRep) {
+        let newProfileData = [
+            req.session.isLoggedIn.id,
+            req.body.first,
+            req.body.last,
+            req.body.email,
+            parseInt(req.body.age),
+            req.body.city,
+            req.body.userUrl
+        ];
+        console.log('server:', ...newProfileData);
+        if (req.body.pass != '') {
+            newProfileData.push(req.body.pass)
+        }
+        db.updateProfile(...newProfileData)
+        .then(update => {
+            console.log('update success:', update);
+            req.session.isLoggedIn.first = req.body.first;
+            req.session.isLoggedIn.last = req.body.last;
+            req.session.isLoggedIn.email = req.body.email;
+            res.redirect('/sign/');
+        })
+        .catch(err => {
+            console.log('error updating profile:', err);
+            res.status(500).render('wrong', {
+                layout: 'petitionAll',
+                msg: 'could update profile. maybe try again later..'
+            });
+        })
+    } else {
+        res.redirect('/edit-profile/passwords-do-not-match/')
+    }
+})
+
+app.post('/delete/', guard, (req, res) => {
+    console.log(req.body);
+    if (req.body.delete === 'signature') {
+        db.deleteRow('signatures', 'id_user_fkey', req.session.isLoggedIn.id)
+            .then(deleted => {
+                console.log('sig deleted:', deleted);
+                req.session.isLoggedIn.hasSigned = null;
+                res.redirect('/sign/')
+            })
+            .catch(err => {
+                console.log('error deleting sig:', err);
+                res.status(500).render('wrong', {
+                    layout: 'petitionAll',
+                    msg: 'could not delete signature. maybe try again later..'
+                });
+            })
+    } else {
+        accountDelete = true;
+        res.render('delete', {
+            layout: 'petitionAll'
+        })
+    }
+})
+
+app.post('/delete-account/', delGuard, (req, res) => {
+    db.deleteRow('users', 'id_user', req.session.isLoggedIn.id)
+        .then(deleted => {
+            console.log('sig deleted:', deleted);
+            accountDelete = false;
+            res.redirect('/logout/')
+        })
 })
 
 app.get('/logout/', (req, res) => {

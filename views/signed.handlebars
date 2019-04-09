@@ -8,7 +8,14 @@
     <div class="user-sig">
         <img src="{{userSig}}" alt="" id="user-signed-img">
     </div>
-    <p>whatever..<a href="/signers">here're some of your co-signees</a> </p>
+    <p>whatever.. </p>
+    <form class="" action="/delete/" method="post" enctype="application/x-www-form-urlencoded">
+        <a href="/signers">here're some of your co-signees</a>
+        <a href="/edit-profile">edit your profile</a>
+        <button type="submit" name="delete" value="signature">withdraw support and delete signature</button>
+        <button type="submit" name="delete" value="account">delete petition account</button>
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    </form>
 </div>
 
 {{> deco_2}}

@@ -13,10 +13,11 @@ CREATE TABLE users (
 
 CREATE TABLE profiles (
     id_profile SERIAL PRIMARY KEY,
+    id_user_fkey INTEGER NOT NULL UNIQUE,
     city VARCHAR(300),
     url VARCHAR(500),
     age INTEGER,
-    id_user_fkey INTEGER REFERENCES users(id_user) NOT NULL UNIQUE
+    FOREIGN KEY (id_user_fkey) REFERENCES users(id_user) ON DELETE CASCADE
 );
 
 CREATE TABLE signatures (
@@ -24,7 +25,7 @@ CREATE TABLE signatures (
     id_user_fkey INTEGER NOT NULL UNIQUE,
     signature TEXT not null,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_user_fkey) REFERENCES users(id_user)
+    FOREIGN KEY (id_user_fkey) REFERENCES users(id_user) ON DELETE CASCADE
 );
 
 INSERT INTO users (first_name, last_name, email, password) VALUES

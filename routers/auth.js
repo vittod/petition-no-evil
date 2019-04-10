@@ -4,7 +4,7 @@ const db = require('../utility/db');
 
 authRouter.get('/register/', (req, res) => {
     res.render('register', {
-        layout: 'petitionAll'
+        layout: 'petitionLogin'
     })
 })
 authRouter.post('/register/', (req, res) => {
@@ -20,14 +20,14 @@ authRouter.post('/register/', (req, res) => {
                         .catch(err => {
                             console.log('not able to create user:', err);
                             res.status(500).render('wrong', {
-                                layout: 'petitionAll',
+                                layout: 'petitionLogin',
                                 msg: 'please try again later.'
                             });
                         })
                 } else {
                     console.log('mail already in db', user.rows.length);
                     res.render('register', {
-                        layout: 'petitionAll',
+                        layout: 'petitionLogin',
                         msg: 'email already registered'
                     })
                 }
@@ -35,13 +35,13 @@ authRouter.post('/register/', (req, res) => {
             .catch(err => {
                 console.log(err);
                 res.status(500).render('wrong', {
-                    layout: 'petitionAll',
+                    layout: 'petitionLogin',
                     msg: 'please try again later.'
                 });
             })
     } else {
         res.render('register', {
-            layout: 'petitionAll',
+            layout: 'petitionLogin',
             msg: 'all fields are required'
         })
     }
@@ -53,7 +53,7 @@ authRouter.get('/login/', (req, res) => {
         res.redirect('/sign/')
     }
     res.render('login', {
-        layout: 'petitionAll'
+        layout: 'petitionLogin'
     })
 })
 authRouter.post('/login/', (req, res) => {
@@ -80,7 +80,7 @@ authRouter.post('/login/', (req, res) => {
                                 }
                             } else {
                                 res.render('login', {
-                                    layout: 'petitionAll',
+                                    layout: 'petitionLogin',
                                     msg: 'no such user or password'
                                 })
                             }
@@ -88,13 +88,13 @@ authRouter.post('/login/', (req, res) => {
                         .catch(err => {
                             console.log('db sign q err', err);
                             res.status(500).render('wrong', {
-                                layout: 'petitionAll',
+                                layout: 'petitionLogin',
                                 msg: 'please try again later.'
                             });
                         })
                 } else {
                     res.render('login', {
-                        layout: 'petitionAll',
+                        layout: 'petitionLogin',
                         msg: 'no such user'
                     })
                 }
@@ -102,13 +102,13 @@ authRouter.post('/login/', (req, res) => {
             .catch(err => {
                 console.log('get user err:', err);
                 res.status(500).render('wrong', {
-                    layout: 'petitionAll',
+                    layout: 'petitionLogin',
                     msg: 'please try again later.'
                 });
             })
     } else {
         res.render('login', {
-            layout: 'petitionAll',
+            layout: 'petitionLogin',
             msg: 'all fields are required'
         })
     }

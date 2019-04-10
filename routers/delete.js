@@ -37,5 +37,4 @@ delRouter.post('/delete-account/', guard, delGuard, (req, res) => {
         })
 })
 
-
 module.exports = delRouter

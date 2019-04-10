@@ -1,5 +1,5 @@
 * {
-    margin: 10px;
+
     box-sizing: border-box;
     font-family: monospace;
     color: ghostwhite;
@@ -12,13 +12,60 @@
 
 body {
     background: green;
+    margin: 0;
+}
+
+header {
+    width: 100%;
+    height: 30px;
+    background: DarkGoldenrod;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 1px 2px 4px 0px rgba(0, 0, 0, 0.2);
 }
 
 section, .content, .signers {
+    margin: 10px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
+}
+
+.logo {
+    width: 100px;
+    display: flex;
+    justify-content: center;
+}
+.logo img {
+    width: auto;
+    height: 20px;
+}
+.logo a {
+    display: flex;
+    text-decoration: none;
+}
+.logo a:focus {
+    box-shadow: none;
+}
+
+.logout {
+    width: 100px;
+}
+.logout h4 {
+    display: flex;
+}
+
+.logout-link {
+    text-decoration: none;
+}
+.logout:hover {
+    opacity: 0.7;
+}
+
+.content > *, form > *, section > * {
+    margin: 10px;
 }
 
 .signers > h3 > a {
@@ -34,6 +81,7 @@ form {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin: 10px;
 }
 
 input {
@@ -47,21 +95,6 @@ input {
 label {
     align-self: flex-start;
 }
-.logout {
-    align-self: flex-end;
-}
-.logout h4 {
-    display: flex;
-    align-items: center;
-}
-
-.logout-link {
-    text-decoration: none;
-}
-.logout:hover {
-    opacity: 0.7;
-}
-
 
 .campagin-deco img {
     position: relative;
@@ -100,12 +133,13 @@ canvas {
 
 button {
     /* width: 80px; */
-    background: limegreen;
+    background: DarkGoldenrod;
     border: none;
     border-radius: 3px;
     opacity: 0.9;
     box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.3);
     display: inline;
+    padding: 5px;
 }
 
 button:hover {

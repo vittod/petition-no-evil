@@ -1,8 +1,9 @@
-{{> logout}}
 <div class="signers">
 
     {{#if aggregCity}}
-        <h1>all signees from {{aggregCity}}</h1>
+        <h1>all signees from {{aggregCity}}..</h1>
+    {{else}}
+        <h1>all signees so far..</h1>
     {{/if}}
     {{#name}}
         {{#if userUrl}}

@@ -10,7 +10,7 @@ app = express();
 app.engine('handlebars', hb());
 app.set('view engine', 'handlebars');
 
-app.use(cs({ maxAge: 1000 * 60 * 60 * 24 * 14, secret: process.env.SESSION_SECRET || require('./.secret.json').sec.cookieS }));
+app.use(cs({ maxAge: 1000 * 60 * 60 * 24 * 14, secret: process.env.SESSION_SECRET || require('./.secret.json').cookieS }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(csurf());
 app.use((req, res, next) => {

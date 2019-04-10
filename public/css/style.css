@@ -46,8 +46,11 @@ section, .content, .signers {
     display: flex;
     text-decoration: none;
 }
-.logo a:focus {
+a:focus {
     box-shadow: none;
+}
+section a:active {
+    opacity: 0.5;
 }
 
 .logout {
@@ -163,6 +166,10 @@ button:active {
 
 .signers button:hover, a:hover {
     opacity: 0.7;
+}
+.signers button:active {
+    opacity: 0.5;
+    transform: none;
 }
 
 .line {

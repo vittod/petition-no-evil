@@ -163,7 +163,7 @@ app.get('/profile/', guard, (req, res) => {
         res.redirect('/sign/')
     }
 })
-app.post('/profile/', (req, res) => {
+app.post('/profile/', guard, (req, res) => {
     db.postProfile(req.body.city, req.body.age, req.body.userUrl, req.session.isLoggedIn.id)
         .then(profile => {
             console.log(profile.rows);
@@ -212,10 +212,14 @@ app.post('/sign/', guard, (req, res) => {
 app.get('/signed/', guard, (req, res) => {
     if (req.session.isLoggedIn.hasSigned) {
         db.getSignature(req.session.isLoggedIn.id)
-        .then((data) => {
+        .then((sigs) => {
+            if (sigs.rows.length > 0) {
+                sigDate = new Date(sigs.rows[0].created_at);
+                sigs.rows[0].created_at = `signed ${sigDate.getMonth()} / ${sigDate.getDate()} / ${sigDate.getFullYear()} at ${sigDate.getHours()}:${sigDate.getMinutes()}`;
+            }
             res.render('signed', {
                 layout:'petitionAll',
-                userSig: data.rows[0].signature,
+                userSig: sigs.rows[0],
                 user: req.session.isLoggedIn
             })
         }).catch(err => {
@@ -235,6 +239,12 @@ app.get('/signers/', guard, (req, res) => {
     if (req.session.isLoggedIn.hasSigned) {
         db.getSignatureJoinAll()
             .then(sigs => {
+                if (sigs.rows.length > 0) {
+                    sigs.rows.forEach(el => {
+                        sigDate = new Date(el.created_at);
+                        el.created_at = `signed ${sigDate.getMonth()} / ${sigDate.getDate()} / ${sigDate.getFullYear()}`;
+                    })
+                }
                 res.render('signers', {
                     layout: 'petitionAll',
                     name: sigs.rows
@@ -256,10 +266,19 @@ app.get('/signers/:city', guard, (req, res) => {
     if (req.session.isLoggedIn.hasSigned) {
         db.getSigCityJoin(req.params.city)
             .then(sigs => {
-                //console.log(sigs.rows);
+                if (sigs.rows.length > 0) {
+                    var city = sigs.rows[0].city.toUpperCase();
+                    sigs.rows.forEach(el => {
+                        delete el.city;
+                        let sigDate = new Date(el.created_at);
+                        el.created_at = `signed ${sigDate.getMonth()} / ${sigDate.getDate()} / ${sigDate.getFullYear()}`;
+                        return el;
+                    })
+                }
                 res.render('signers', {
                     layout: 'petitionAll',
-                    name: sigs.rows
+                    name: sigs.rows,
+                    aggregCity: city
                 })
             })
             .catch(err => {
@@ -279,6 +298,9 @@ app.get('/edit-profile/:message?*', guard, (req, res) => {
     if (req.session.isLoggedIn.hasProf) {
         db.getProfileById(req.session.isLoggedIn.id)
             .then(profile => {
+                if (req.params.message === 'p') {
+                    var message = 'passwords do not match!'
+                }
                 res.render('profile-edit', {
                     layout: 'petitionAll',
                     userProfile: {
@@ -289,7 +311,7 @@ app.get('/edit-profile/:message?*', guard, (req, res) => {
                         age: profile.rows[0].age,
                         url: profile.rows[0].url
                     },
-                    msg: req.params.message
+                    msg: message
                 })
             })
             .catch(err => {
@@ -342,7 +364,7 @@ app.post('/edit-profile/', guard, (req, res) => {
             });
         })
     } else {
-        res.redirect('/edit-profile/passwords-do-not-match/')
+        res.redirect('/edit-profile/p/')
     }
 })
 

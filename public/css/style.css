@@ -50,6 +50,10 @@ label {
 .logout {
     align-self: flex-end;
 }
+.logout h4 {
+    display: flex;
+    align-items: center;
+}
 
 .logout-link {
     text-decoration: none;
@@ -95,12 +99,13 @@ canvas {
 }
 
 button {
-    width: 80px;
+    /* width: 80px; */
     background: limegreen;
     border: none;
     border-radius: 3px;
     opacity: 0.9;
     box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.3);
+    display: inline;
 }
 
 button:hover {

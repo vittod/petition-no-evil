@@ -1,17 +1,24 @@
 {{> logout}}
 <div class="signers">
 
+    {{#if aggregCity}}
+        <h1>all signees from {{aggregCity}}</h1>
+    {{/if}}
     {{#name}}
         {{#if userUrl}}
-            <h3><a href="{{userUrl}}" target="_blank">{{firstName}} {{lastName}}</a> {{age}} <a href="signers/{{city}}">{{city}}</a> </h3>
+            <h3><a href="{{userUrl}}" target="_blank">{{firstName}} {{lastName}}</a> {{age}} <a href="signers/{{city}}">{{city}}</a> - {{created_at}}</h3>
         {{else}}
-            <h3>{{firstName}} {{lastName}} {{age}} <a href="signers/{{city}}">{{city}}</a> </h3>
+            <h3>{{firstName}} {{lastName}} {{age}} <a href="signers/{{city}}">{{city}}</a> - {{created_at}}</h3>
         {{/if}}
     {{/name}}
+
 
 </div>
 
 <p><h1>have a nice movement, anyway!</h1></p>
+{{#if aggregCity}}
+    <p><a href="/signers">wanna go back to all signees?</a></p>
+{{/if}}
 <p><a href="/signed">wanna see your signature again?</a></p>
 
 {{> deco}}

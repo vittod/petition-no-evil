@@ -34,7 +34,7 @@ exports.getSignatureAll = () => {
 
 exports.getSignatureJoinAll = () => {
     let params = [];
-    let q = `   SELECT first_name AS "firstName", last_name AS "lastName", email, city, url AS "userUrl", age, id_user, id_sig
+    let q = `   SELECT signatures.created_at, first_name AS "firstName", last_name AS "lastName", email, city, url AS "userUrl", age, id_user, id_sig
                 FROM signatures
                 LEFT JOIN profiles
                 ON signatures.id_user_fkey = profiles.id_user_fkey
@@ -45,7 +45,7 @@ exports.getSignatureJoinAll = () => {
 
 exports.getSigCityJoin = (city) => {
     let params = [city];
-    let q = `   SELECT first_name AS "firstName", last_name AS "lastName", email, city, url AS "userUrl", age
+    let q = `   SELECT signatures.created_at, first_name AS "firstName", last_name AS "lastName", email, city, url AS "userUrl", age
                 FROM signatures
                 JOIN profiles
                 ON signatures.id_user_fkey = profiles.id_user_fkey

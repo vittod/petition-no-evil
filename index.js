@@ -4,14 +4,13 @@ const db = require('./utility/db');
 const bodyParser = require('body-parser');
 const cs = require('cookie-session');
 const csurf = require('csurf');
-const sec = require('./.secret.json')
 let accountDelete = false;
 
 app = express();
 app.engine('handlebars', hb());
 app.set('view engine', 'handlebars');
 
-app.use(cs({ maxAge: 1000 * 60 * 60 * 24 * 14, secret: process.env.SESSION_SECRET || sec.cookieS }));
+app.use(cs({ maxAge: 1000 * 60 * 60 * 24 * 14, secret: process.env.SESSION_SECRET || require('./.secret.json').sec.cookieS }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(csurf());
 app.use((req, res, next) => {

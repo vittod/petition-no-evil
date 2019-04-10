@@ -2,8 +2,8 @@ const spicedPg = require('spiced-pg');
 const hb = require('./hashPass');
 const uif = require('./userInputFormatter');
 
-
-const db = spicedPg('postgres://marcuswagner:postgres@localhost:5432/petition')
+const dbUrl = process.env.DATABASE_URL || `postgres://${require('../.secret.json').dbAccess}@localhost:5432/petition`;
+const db = spicedPg(dbUrl)
 
 exports.postSignature = (signature, userId) => {
     let q = `   INSERT INTO signatures (signature, id_user_fkey)

@@ -11,7 +11,7 @@ app = express();
 app.engine('handlebars', hb());
 app.set('view engine', 'handlebars');
 
-app.use(cs({ maxAge: 1000 * 60 * 60 * 24 * 14, secret: sec.cookieS}));
+app.use(cs({ maxAge: 1000 * 60 * 60 * 24 * 14, secret: process.env.SESSION_SECRET || sec.cookieS }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(csurf());
 app.use((req, res, next) => {
@@ -391,4 +391,4 @@ app.get('*', (req, res) => {
     });
 })
 
-app.listen(8080, () => console.log('server listening..'))
+app.listen(process.env:PORT || 8080, () => console.log('server listening..'))

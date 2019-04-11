@@ -2,7 +2,6 @@ const express = require('express');
 const delRouter = express.Router();
 const { guard, delGuard } = require('../middleware');
 const db = require('../utility/db');
-let accountDelete = false;
 
 delRouter.post('/delete/', guard, (req, res) => {
     console.log(req.body);
@@ -21,7 +20,7 @@ delRouter.post('/delete/', guard, (req, res) => {
                 });
             })
     } else {
-        accountDelete = true;
+        req.session.accountDelete = true;
         res.render('delete', {
             layout: 'petitionAll'
         })
@@ -32,7 +31,7 @@ delRouter.post('/delete-account/', guard, delGuard, (req, res) => {
     db.deleteRow('users', 'id_user', req.session.isLoggedIn.id)
         .then(deleted => {
             console.log('sig deleted:', deleted);
-            accountDelete = false;
+            req.session.accountDelete = false;
             res.redirect('/logout/')
         })
 })

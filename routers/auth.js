@@ -1,9 +1,10 @@
-const express = require('express');
-const authRouter = express.Router();
-const db = require('../utility/db');
+const express = require('express')
+const authRouter = express.Router()
+const db = require('../utility/db')
 const uif = require('../utility/userInputFormatter')
+const { logged } = require('../middleware')
 
-authRouter.get('/register/', (req, res) => {
+authRouter.get('/register/', logged, (req, res) => {
     res.render('register', {
         layout: 'petitionLogin'
     })
@@ -55,11 +56,7 @@ authRouter.post('/register/', (req, res) => {
     }
 })
 
-authRouter.get('/login/', (req, res) => {
-    console.log(req.session.isLoggedIn);
-    if (req.session.isLoggedIn) {
-        res.redirect('/sign/')
-    }
+authRouter.get('/login/', logged, (req, res) => {
     res.render('login', {
         layout: 'petitionLogin'
     })
@@ -81,6 +78,7 @@ authRouter.post('/login/', (req, res) => {
                                     hasSigned: user.rows[0].id_sig
                                 };
                                 console.log('user login:', req.session.isLoggedIn);
+                                req.session.accountDelete = false;
                                 if (!req.session.isLoggedIn.hasProf) {
                                     res.redirect('/profile/')
                                 } else {

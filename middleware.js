@@ -2,8 +2,12 @@ exports.guard = (req, res, next) => {
     req.session.isLoggedIn ? next() : res.redirect('/register/')
 }
 
+exports.logged = (req, res, next) => {
+    !req.session.isLoggedIn ? next() : res.redirect('/sign/')
+}
+
 exports.notSigned = (req, res, next) => {
-    !req.session.isLoggedIn.hasSigned ? next() : res.redirect('/signed/')
+    req.session.isLoggedIn.hasSigned == null ? next() : res.redirect('/signed/')
 }
 
 exports.hasSigned = (req, res, next) => {
@@ -11,7 +15,7 @@ exports.hasSigned = (req, res, next) => {
 }
 
 exports.delGuard = (req, res, next) => {
-    accountDelete ? next() : res.redirect('/signed/')
+    req.session.accountDelete ? next() : res.redirect('/signed/')
 }
 
 exports.csrfT = (req, res, next) => {

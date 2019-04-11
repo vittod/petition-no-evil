@@ -9,7 +9,7 @@ signRouter.get('/sign/', guard, notSigned, (req, res) => {
         user: req.session.isLoggedIn
     })
 })
-signRouter.post('/sign/', guard, (req, res) => {
+signRouter.post('/sign/', guard, notSigned, (req, res) => {
     if (req.body.signature) {
         db.postSignature(req.body.signature, req.session.isLoggedIn.id)
             .then((data) => {

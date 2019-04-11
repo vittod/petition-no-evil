@@ -43,6 +43,6 @@ app.get('*', (req, res) => {
     })
 })
 
-if (require.main === module) {
+if (require.main == module) {
     app.listen(process.env.PORT || 8080)
 }

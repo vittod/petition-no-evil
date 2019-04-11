@@ -1,22 +1,24 @@
-const express = require('express');
-const hb = require('express-handlebars');
-const bodyParser = require('body-parser');
-const cs = require('cookie-session');
-const csurf = require('csurf');
-const { csrfT } = require('./middleware');
-const authRouter = require('./routers/auth');
-const profRouter = require('./routers/profile');
-const signRouter = require('./routers/sign');
-const delRouter = require('./routers/delete');
+const express = require('express')
+const app = exports.app = express()
+const hb = require('express-handlebars')
+const bodyParser = require('body-parser')
+const cs = require('cookie-session')
+const csurf = require('csurf')
+const { csrfT } = require('./middleware')
+const authRouter = require('./routers/auth')
+const profRouter = require('./routers/profile')
+const signRouter = require('./routers/sign')
+const delRouter = require('./routers/delete')
+const helmet = require('helmet')
 
-app = express();
-app.engine('handlebars', hb());
-app.set('view engine', 'handlebars');
+app.engine('handlebars', hb())
+app.set('view engine', 'handlebars')
 
-app.use(cs({ maxAge: 1000 * 60 * 60 * 24 * 14, secret: process.env.SESSION_SECRET || require('./.secret.json').cookieS }));
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(csurf());
-app.use(csrfT);
+app.use(helmet())
+app.use(cs({ maxAge: 1000 * 60 * 60 * 24 * 14, secret: process.env.SESSION_SECRET || require('./.secret.json').cookieS }))
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(csurf())
+app.use(csrfT)
 app.use(express.static(__dirname + '/public/'))
 
 app.get('/', (req, res) => {
@@ -38,7 +40,9 @@ app.get('/logout/', (req, res) => {
 app.get('*', (req, res) => {
     res.status(404).render('404', {
         layout: 'petitionAll'
-    });
+    })
 })
 
-app.listen(process.env.PORT || 8080);
+if (require.main === module) {
+    app.listen(process.env.PORT || 8080)
+}

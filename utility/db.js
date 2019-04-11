@@ -1,6 +1,6 @@
 const spicedPg = require('spiced-pg');
 const hb = require('./hashPass');
-const uif = require('./userInputFormatter');
+const { saniStrToNum, sanitizer, checkUrl } = require('./userInputFormatter');
 
 const dbUrl = process.env.DATABASE_URL || `postgres://${require('../.secret.json').dbAccess}@localhost:5432/petition`;
 const db = spicedPg(dbUrl)
@@ -87,7 +87,7 @@ exports.postUser = (nameFirst, nameLast, email, rawPass) => {
             let q = `   INSERT INTO users (first_name, last_name, email, password)
                         VALUES ($1, $2, $3, $4)
                         RETURNING id_user`;
-            let params = [nameFirst, nameLast, email, hash];
+            let params = [sanitizer(nameFirst), sanitizer(nameLast), email, hash];
             return db.query(q, params)
         })
         .catch(err => err)
@@ -106,23 +106,24 @@ exports.getProfileById = (userId) => {
 }
 
 exports.postProfile = (city, age, urlInput, userId) => {
-    let params = [city, parseInt(age), uif.checkUrl(urlInput), userId];
+    console.log('here', typeof checkUrl(urlInput));
+    let params = [sanitizer(city), saniStrToNum(age), checkUrl(urlInput), userId];
     let q = `   INSERT INTO profiles (city, age, url, id_user_fkey)
                 VALUES ($1, $2, $3, $4)
                 RETURNING id_profile;`;
     return db.query(q, params)
 }
-/////// leave this a funciton declaration for arguments sake! /////////////
-exports.updateProfile = function(userId, first, last, email, age, city, url, rawPass) {
-    let params_2 = Array.prototype.slice.call(arguments).slice(1);
-    let params_1 = params_2.splice(0, 3);
+
+exports.updateProfile = (userId, first, last, email, age, city, url, rawPass) => {
+    let params_1 = [sanitizer(first), sanitizer(last), email]; // email is valideted on post route and should not be altered!
+    let params_2 = [saniStrToNum(age), sanitizer(city), checkUrl(url)];
 
     let q = `   INSERT INTO profiles (age, city, url, id_user_fkey)
                 VALUES ($1, $2, $3, ${userId})
                 ON CONFLICT (id_user_fkey)
                 DO UPDATE SET age = $1, city = $2, url = $3;`;
 
-    if (params_2.length < 4) {
+    if (typeof rawPass === 'undefined') {
         return Promise.all([
             db.query(`  UPDATE users SET first_name = $1, last_name = $2, email = $3
                         WHERE id_user = ${userId};`, params_1),
@@ -131,7 +132,6 @@ exports.updateProfile = function(userId, first, last, email, age, city, url, raw
     } else {
         return hb.hashPass(rawPass)
             .then(hash => {
-                params_2.pop();
                 return Promise.all([
                     db.query(`  UPDATE users SET first_name = $1, last_name = $2, email = $3, password = '${hash}'
                                 WHERE id_user = ${userId};`, params_1),

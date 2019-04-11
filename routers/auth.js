@@ -1,6 +1,7 @@
 const express = require('express');
 const authRouter = express.Router();
 const db = require('../utility/db');
+const uif = require('../utility/userInputFormatter')
 
 authRouter.get('/register/', (req, res) => {
     res.render('register', {
@@ -9,21 +10,22 @@ authRouter.get('/register/', (req, res) => {
 })
 authRouter.post('/register/', (req, res) => {
     if (req.body.first && req.body.last && req.body.email && req.body.pass) {
-        db.getUserByEmail(req.body.email)
+        if (uif.escComp(req.body.email) && uif.mailValid(req.body.email)) {
+            db.getUserByEmail(req.body.email)
             .then(user => {
                 if (user.rows.length < 1) {
                     db.postUser(req.body.first, req.body.last, req.body.email, req.body.pass)
-                        .then(nuUser => {
-                            console.log('new user created:', nuUser.rows);
-                            res.redirect('/login/')
-                        })
-                        .catch(err => {
-                            console.log('not able to create user:', err);
-                            res.status(500).render('wrong', {
-                                layout: 'petitionLogin',
-                                msg: 'please try again later.'
-                            });
-                        })
+                    .then(nuUser => {
+                        console.log('new user created:', nuUser.rows);
+                        res.redirect('/login/')
+                    })
+                    .catch(err => {
+                        console.log('not able to create user:', err);
+                        res.status(500).render('wrong', {
+                            layout: 'petitionLogin',
+                            msg: 'please try again later.'
+                        });
+                    })
                 } else {
                     console.log('mail already in db', user.rows.length);
                     res.render('register', {
@@ -39,6 +41,12 @@ authRouter.post('/register/', (req, res) => {
                     msg: 'please try again later.'
                 });
             })
+        } else {
+            res.render('register', {
+                layout: 'petitionLogin',
+                msg: 'no valid email'
+            })
+        }
     } else {
         res.render('register', {
             layout: 'petitionLogin',

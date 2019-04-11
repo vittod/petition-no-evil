@@ -1,7 +1,8 @@
-const express = require('express');
-const profRouter = express.Router();
-const { guard } = require('../middleware');
-const db = require('../utility/db');
+const express = require('express')
+const profRouter = express.Router()
+const { guard } = require('../middleware')
+const db = require('../utility/db')
+const uif = require('../utility/userInputFormatter')
 
 profRouter.get('/profile/', guard, (req, res) => {
     if (req.session.isLoggedIn.hasProf === null) {
@@ -29,8 +30,9 @@ profRouter.get('/edit-profile/:message?*', guard, (req, res) => {
     if (req.session.isLoggedIn.hasProf) {
         db.getProfileById(req.session.isLoggedIn.id)
             .then(profile => {
-                if (req.params.message === 'p') {
-                    var message = 'passwords do not match!'
+                switch (req.params.message) {
+                    case 'p': var message = 'passwords do not match!'; break;
+                    case 'e': var message = 'email is not valid!';
                 }
                 res.render('profile-edit', {
                     layout: 'petitionAll',
@@ -39,7 +41,7 @@ profRouter.get('/edit-profile/:message?*', guard, (req, res) => {
                         last: req.session.isLoggedIn.last,
                         email: req.session.isLoggedIn.email,
                         city: profile.rows[0].city,
-                        age: profile.rows[0].age,
+                        age: profile.rows[0].age === 0 ? '' : profile.rows[0].age,
                         url: profile.rows[0].url
                     },
                     msg: message
@@ -53,47 +55,55 @@ profRouter.get('/edit-profile/:message?*', guard, (req, res) => {
                 });
             })
     } else {
+        switch (req.params.message) {
+            case 'p': var message = 'passwords do not match!'; break;
+            case 'e': var message = 'email is not valid!';
+        }
         res.render('profile-edit', {
             layout: 'petitionAll',
-            profile: {
+            userProfile: {
                 first: req.session.isLoggedIn.first,
                 last: req.session.isLoggedIn.last,
                 email: req.session.isLoggedIn.email
             },
-            msg: req.params.message
+            msg: message
         })
     }
 })
 profRouter.post('/edit-profile/', guard, (req, res) => {
     if (req.body.pass === req.body.passRep) {
-        let newProfileData = [
-            req.session.isLoggedIn.id,
-            req.body.first,
-            req.body.last,
-            req.body.email,
-            parseInt(req.body.age),
-            req.body.city,
-            req.body.userUrl
-        ];
-        console.log('server:', ...newProfileData);
-        if (req.body.pass != '') {
-            newProfileData.push(req.body.pass)
+        if (uif.mailValid(req.body.email) && uif.escComp(req.body.email)) {
+            let newProfileData = [
+                req.session.isLoggedIn.id,
+                req.body.first,
+                req.body.last,
+                req.body.email,
+                req.body.age,
+                req.body.city,
+                req.body.userUrl
+            ];
+            console.log('server:', ...newProfileData);
+            if (req.body.pass != '') {
+                newProfileData.push(req.body.pass)
+            }
+            db.updateProfile(...newProfileData)
+            .then(update => {
+                console.log('update success:', update);
+                req.session.isLoggedIn.first = uif.sanitizer(req.body.first);
+                req.session.isLoggedIn.last = uif.sanitizer(req.body.last);
+                req.session.isLoggedIn.email = req.body.email;
+                res.redirect('/sign/');
+            })
+            .catch(err => {
+                console.log('error updating profile:', err);
+                res.status(500).render('wrong', {
+                    layout: 'petitionAll',
+                    msg: 'could update profile. maybe try again later..'
+                });
+            })
+        } else {
+            res.redirect('/edit-profile/e/')
         }
-        db.updateProfile(...newProfileData)
-        .then(update => {
-            console.log('update success:', update);
-            req.session.isLoggedIn.first = req.body.first;
-            req.session.isLoggedIn.last = req.body.last;
-            req.session.isLoggedIn.email = req.body.email;
-            res.redirect('/sign/');
-        })
-        .catch(err => {
-            console.log('error updating profile:', err);
-            res.status(500).render('wrong', {
-                layout: 'petitionAll',
-                msg: 'could update profile. maybe try again later..'
-            });
-        })
     } else {
         res.redirect('/edit-profile/p/')
     }

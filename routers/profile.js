@@ -1,6 +1,7 @@
 const express = require('express')
 const profRouter = express.Router()
 const { guard } = require('../middleware')
+const redis = require('../redis')
 const db = require('../utility/db')
 const uif = require('../utility/userInputFormatter')
 
@@ -14,6 +15,9 @@ profRouter.get('/profile/', guard, (req, res) => {
     }
 })
 profRouter.post('/profile/', guard, (req, res) => {
+    if (req.body.city) {
+        req.session.isLoggedIn.city = uif.sanitizer(req.body.city)
+    }
     db.postProfile(req.body.city, req.body.age, req.body.userUrl, req.session.isLoggedIn.id)
         .then(profile => {
             console.log(profile.rows);
@@ -73,6 +77,12 @@ profRouter.get('/edit-profile/:message?*', guard, (req, res) => {
 profRouter.post('/edit-profile/', guard, (req, res) => {
     if (req.body.pass === req.body.passRep) {
         if (uif.mailValid(req.body.email) && uif.escComp(req.body.email)) {
+            redis.del('city' + req.session.isLoggedIn.city.toUpperCase())
+                .then(delSigCities => console.log('depricated city data deleted:', req.session.isLoggedIn.city))
+                .catch(err => new Error('prob with redis:', err))
+            redis.del('allSigs')
+                .then(delSigs => console.log('depricated data deleted:', delsSigs))
+                .catch(err => new Error('prob with redis:', err))
             let newProfileData = [
                 req.session.isLoggedIn.id,
                 req.body.first,
@@ -92,6 +102,7 @@ profRouter.post('/edit-profile/', guard, (req, res) => {
                 req.session.isLoggedIn.first = uif.sanitizer(req.body.first);
                 req.session.isLoggedIn.last = uif.sanitizer(req.body.last);
                 req.session.isLoggedIn.email = req.body.email;
+                req.session.isLoggedIn.city = uif.sanitizer(req.body.city)
                 res.redirect('/sign/');
             })
             .catch(err => {

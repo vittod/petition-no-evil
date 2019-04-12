@@ -1,5 +1,6 @@
 const express = require('express')
 const signRouter = express.Router()
+const redis = require('../redis')
 const { guard, notSigned, hasSigned } = require('../middleware')
 const { db } = require('../index')
 // const db = require('../__mocks__/db');  ////// for testing change to this module
@@ -12,6 +13,14 @@ signRouter.get('/sign/', guard, notSigned, (req, res) => {
 })
 signRouter.post('/sign/', guard, notSigned, (req, res) => {
     if (req.body.signature) {
+        redis.del('allSigs')
+            .then(delSigs => console.log('depricated data deleted:', delsSigs))
+            .catch(err => new Error('prob with redis:', err))
+        if (req.session.isLoggedIn.city) {
+            redis.del('city' + req.session.isLoggedIn.city.toUpperCase())
+                .then(delSigCities => console.log('depricated city data deleted:', req.session.isLoggedIn.city))
+                .catch(err => new Error('prob with redis:', err))
+        }
         db.postSignature(req.body.signature, req.session.isLoggedIn.id)
             .then((data) => {
                 console.log('new db insert, id:', data.rows[0].id_sig);
@@ -55,52 +64,83 @@ signRouter.get('/signed/', guard, hasSigned, (req, res) => {
 })
 
 signRouter.get('/signers/', guard, hasSigned, (req, res) => {
-    db.getSignatureJoinAll()
-        .then(sigs => {
-            if (sigs.rows.length > 0) {
-                sigs.rows.forEach(el => {
-                    sigDate = new Date(el.created_at);
-                    el.created_at = `signed ${sigDate.getMonth()} / ${sigDate.getDate()} / ${sigDate.getFullYear()}`;
+    redis.get('allSigs')
+        .then(allSigs => {
+            console.log('got from redis signers:', allSigs);
+            if (allSigs){
+                res.render('signers', {
+                    layout: 'petitionAll',
+                    name: JSON.parse(allSigs)
+                })
+            } else {
+                db.getSignatureJoinAll()
+                .then(sigs => {
+                    if (sigs.rows.length > 0) {
+                        sigs.rows.forEach(el => {
+                            sigDate = new Date(el.created_at);
+                            el.created_at = `signed ${sigDate.getMonth()} / ${sigDate.getDate()} / ${sigDate.getFullYear()}`;
+                        })
+                    }
+                    redis.setex('allSigs', 120, JSON.stringify(sigs.rows))
+                        .then(sigsSet => console.log('put in redis signers:', sigsSet))
+                        .catch(err => new Error('prob with redis:', err))
+                    res.render('signers', {
+                        layout: 'petitionAll',
+                        name: sigs.rows
+                    })
+                })
+                .catch(err => {
+                    console.log('could not load signed useres:', err);
+                    res.status(500).render('wrong', {
+                        layout: 'petitionAll',
+                        msg: 'could not load signers. maybe try again later..'
+                    });
                 })
             }
-            res.render('signers', {
-                layout: 'petitionAll',
-                name: sigs.rows
-            })
         })
-        .catch(err => {
-            console.log('could not load signed useres:', err);
-            res.status(500).render('wrong', {
-                layout: 'petitionAll',
-                msg: 'could not load signers. maybe try again later..'
-            });
-        })
+        .catch(err => new Error('prob with redis:', err))
 })
 signRouter.get('/signers/:city', guard, hasSigned, (req, res) => {
-    db.getSigCityJoin(req.params.city)
-        .then(sigs => {
-            if (sigs.rows.length > 0) {
-                var city = sigs.rows[0].city.toUpperCase();
-                sigs.rows.forEach(el => {
-                    delete el.city;
-                    let sigDate = new Date(el.created_at);
-                    el.created_at = `signed ${sigDate.getMonth()} / ${sigDate.getDate()} / ${sigDate.getFullYear()}`;
-                    return el;
+    redis.get('city' + req.params.city)
+        .then(myCity => {
+            console.log('got from redis city sigs:', myCity);
+            if (myCity) {
+                res.render('signers', {
+                    layout: 'petitionAll',
+                    name: JSON.parse(myCity),
+                    aggregCity: req.params.city.toUpperCase()
+                })
+            } else {
+                db.getSigCityJoin(req.params.city)
+                .then(sigs => {
+                    if (sigs.rows.length > 0) {
+                        var city = sigs.rows[0].city.toUpperCase();
+                        redis.setex('city' + city, 120, JSON.stringify(sigs.rows))
+                            .then(sigsSet => console.log('put in redis city sigs:', sigsSet))
+                            .catch(err => new Error('prob with redis:', err))
+                        sigs.rows.forEach(el => {
+                            delete el.city;
+                            let sigDate = new Date(el.created_at);
+                            el.created_at = `signed ${sigDate.getMonth()} / ${sigDate.getDate()} / ${sigDate.getFullYear()}`;
+                            return el;
+                        })
+                    }
+                    res.render('signers', {
+                        layout: 'petitionAll',
+                        name: sigs.rows,
+                        aggregCity: city
+                    })
+                })
+                .catch(err => {
+                    console.log('could not load signed useres:', err);
+                    res.status(500).render('wrong', {
+                        layout: 'petitionAll',
+                        msg: 'could not load signers. maybe try again later..'
+                    });
                 })
             }
-            res.render('signers', {
-                layout: 'petitionAll',
-                name: sigs.rows,
-                aggregCity: city
-            })
         })
-        .catch(err => {
-            console.log('could not load signed useres:', err);
-            res.status(500).render('wrong', {
-                layout: 'petitionAll',
-                msg: 'could not load signers. maybe try again later..'
-            });
-        })
+        .catch(err => new Error('prob with redis:', err))
 })
 
 module.exports = signRouter

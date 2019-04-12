@@ -1,7 +1,7 @@
-const express = require('express');
-const signRouter = express.Router();
-const { guard, notSigned, hasSigned } = require('../middleware');
-const db = require('../utility/db');
+const express = require('express')
+const signRouter = express.Router()
+const { guard, notSigned, hasSigned } = require('../middleware')
+const { db } = require('../index')
 // const db = require('../__mocks__/db');  ////// for testing change to this module
 
 signRouter.get('/sign/', guard, notSigned, (req, res) => {

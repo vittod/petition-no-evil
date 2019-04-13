@@ -1,6 +1,4 @@
 * {
-
-    box-sizing: border-box;
     font-family: monospace;
     color: ghostwhite;
 }
@@ -11,14 +9,22 @@
 }
 
 body {
-    background: green;
+    box-sizing: border-box;
+    background: #49beb7;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 header {
-    width: 100%;
+    top: 0;
+    position: fixed;
+    z-index: 500;
+    width: 100vw;
     height: 30px;
-    background: DarkGoldenrod;
+    background: #085f63;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -26,11 +32,35 @@ header {
 }
 
 section, .content, .signers {
+    width: 80vw;
     margin: 10px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
+}
+
+.header-padding {
+    padding-top: 3rem;
+}
+
+section {
+    margin-top: 0;
+    background: #085f63;
+    min-height: 100vh;
+    justify-content: flex-start;
+}
+
+.container {
+    width: 55vw;
+    background: rgba(73, 190, 183, 0.1);
+    border-radius: 10px;
+    padding-bottom: 3rem;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
+    text-align: center;
 }
 
 .logo {
@@ -75,10 +105,6 @@ section a:active {
     margin: 0;
 }
 
-.introduction {
-    text-align: center;
-}
-
 form {
     width: 500px;
     display: flex;
@@ -117,6 +143,7 @@ label {
 .campagin-deco, .campagin-deco-2 {
     height: 300px;
     width: 300px;
+    margin-bottom: 40px;
     overflow: hidden;
     border-radius: 50%;
     border: 1px solid rgba(255, 255, 255, 0.3);
@@ -176,14 +203,48 @@ button:active {
     width: 30px;
     border-bottom: 1px solid ghostwhite;
     padding-top: 15px;
+    margin-bottom: 20px;
 }
 
 p.message {
-    color: gold;
+    color: #facf5a;
 }
 
 .user-sig > img{
     background: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+    font-size: 2rem;
+}
+
+@media (max-width: 925px) {
+    form, input {
+        width: 95%;
+    }
+    canvas, .user-sig > img {
+        width: 100%;
+        height: auto;
+    }
+
+}
+
+@media (max-width: 580px) {
+    .signers button {
+        min-width: 37%;
+        width: 60%;
+    }
+
+}
+
+@media (max-width: 410px) {
+    section {
+        width: 90vw;
+    }
+    .campagin-deco, .campagin-deco-2{
+        height: 278px;
+        width: 270px;
+    }
 }

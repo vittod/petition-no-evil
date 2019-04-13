@@ -1,13 +1,10 @@
-<div class="introduction">
-    <h1>we petition against anything!</h1>
+<div class="content container">
+    <p><h1>we petition against anything!</h1></p>
     <h2>we'd love to know more about you!</h2>
-</div>
-
-<div class="content">
     <form class="" action="/profile/" method="post" enctype="application/x-www-form-urlencoded">
-        <input type="text" name="city">
+        <input type="text" name="city" placeholder="eg. Sao Paolo">
         <label for="city">your city</label>
-        <input type="text" name="age">
+        <input type="text" placeholder="eg. 35" name="age">
         <label for="age">your age</label>
         <input type="text" name="userUrl" placeholder="http..">
         <label for="userUrl">your website</label>
@@ -17,5 +14,7 @@
     <p class="message">{{msg}}</p>
     <p>in case you don't like to share, feel free to just continue..</p>
 </div>
+
+<div class="line"></div>
 
 {{> deco}}

@@ -1,23 +1,24 @@
-<div class="introduction">
-    <h1>we petition against anything!</h1>
+<div class="content container">
+    <p><h1>we petition against anything!</h1></p>
     <h2>please register to sign the petition</h2>
-</div>
-
-<div class="content">
     <form class="" action="/register/" method="post" enctype="application/x-www-form-urlencoded">
-        <input type="text" name="first">
+        <input type="text" name="first" placeholder="eg. Dorian" value="{{tmpUser.first}}">
         <label for="first">first name *</label>
-        <input type="text" name="last">
+        <input type="text" name="last" placeholder="eg. Gray" value="{{tmpUser.last}}">
         <label for="last">last name *</label>
-        <input type="text" name="email">
+        <input type="text" name="email" placeholder="eg. dori@gray.me" value="{{tmpUser.email}}">
         <label for="email">your email *</label>
         <input type="password" name="pass">
         <label for="pass">choose password *</label>
+        <input type="password" name="passRep">
+        <label for="passRep">password (repeat please) *</label>
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         <button type="submit" name="register-submit"><i class="fas fa-user-plus"></i> register</button>
     </form>
     <p class="message">{{msg}}</p>
     <p>are you already registered? <a href="/login">go to login page</a> </p>
 </div>
+
+<div class="line"></div>
 
 {{> deco_2}}

@@ -79,6 +79,9 @@ signRouter.get('/signers/', guard, hasSigned, (req, res) => {
                         sigs.rows.forEach(el => {
                             sigDate = new Date(el.created_at);
                             el.created_at = `signed ${sigDate.getMonth()} / ${sigDate.getDate()} / ${sigDate.getFullYear()}`;
+                            if (el.age === 0 || el.age === null) {
+                                el.age = ''
+                            }
                         })
                     }
                     redis.setex('allSigs', 120, JSON.stringify(sigs.rows))
@@ -119,6 +122,9 @@ signRouter.get('/signers/:city', guard, hasSigned, (req, res) => {
                             delete el.city;
                             let sigDate = new Date(el.created_at);
                             el.created_at = `signed ${sigDate.getMonth()} / ${sigDate.getDate()} / ${sigDate.getFullYear()}`;
+                            if (el.age === 0 || el.age === null) {
+                                el.age = ''
+                            }
                             return el;
                         })
                         redis.setex('city' + city.toUpperCase(), 120, JSON.stringify(sigs.rows))

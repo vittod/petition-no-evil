@@ -1,9 +1,9 @@
-<div class="signers">
+<div class="signers container">
 
     {{#if aggregCity}}
-        <h1>all signees from {{aggregCity}}..</h1>
+        <p> <h1>all signees from {{aggregCity}}..</h1> </p>
     {{else}}
-        <h1>all signees so far..</h1>
+        <p> <h1>all signees so far..</h1> </p>
     {{/if}}
     {{#name}}
         {{#if userUrl}}
@@ -16,11 +16,14 @@
 
 </div>
 <div class="line"></div>
-<p><h1>have a nice movement, anyway!</h1></p>
-<div class="line"></div>
-{{#if aggregCity}}
+<div class="container">
+    <p><h1>have a nice movement, anyway!</h1></p>
+    {{#if aggregCity}}
     <p><a href="/signers">wanna go back to all signees?</a></p>
-{{/if}}
-<p><a href="/signed">wanna see your signature again?</a></p>
+    {{/if}}
+    <p><a href="/signed">wanna see your signature again?</a></p>
+</div>
+
+<div class="line"></div>
 
 {{> deco}}

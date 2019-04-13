@@ -115,15 +115,15 @@ signRouter.get('/signers/:city', guard, hasSigned, (req, res) => {
                 .then(sigs => {
                     if (sigs.rows.length > 0) {
                         var city = sigs.rows[0].city.toUpperCase();
-                        redis.setex('city' + city.toUpperCase(), 120, JSON.stringify(sigs.rows))
-                            .then(sigsSet => console.log('put in redis city sigs:', sigsSet))
-                            .catch(err => new Error('prob with redis:', err))
                         sigs.rows.forEach(el => {
                             delete el.city;
                             let sigDate = new Date(el.created_at);
                             el.created_at = `signed ${sigDate.getMonth()} / ${sigDate.getDate()} / ${sigDate.getFullYear()}`;
                             return el;
                         })
+                        redis.setex('city' + city.toUpperCase(), 120, JSON.stringify(sigs.rows))
+                        .then(sigsSet => console.log('put in redis city sigs:', sigsSet))
+                        .catch(err => new Error('prob with redis:', err))
                     }
                     res.render('signers', {
                         layout: 'petitionAll',

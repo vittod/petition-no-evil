@@ -101,7 +101,7 @@ signRouter.get('/signers/', guard, hasSigned, (req, res) => {
         .catch(err => new Error('prob with redis:', err))
 })
 signRouter.get('/signers/:city', guard, hasSigned, (req, res) => {
-    redis.get('city' + req.params.city)
+    redis.get('city' + req.params.city.toUpperCase())
         .then(myCity => {
             console.log('got from redis city sigs:', myCity);
             if (myCity) {
@@ -115,7 +115,7 @@ signRouter.get('/signers/:city', guard, hasSigned, (req, res) => {
                 .then(sigs => {
                     if (sigs.rows.length > 0) {
                         var city = sigs.rows[0].city.toUpperCase();
-                        redis.setex('city' + city, 120, JSON.stringify(sigs.rows))
+                        redis.setex('city' + city.toUpperCase(), 120, JSON.stringify(sigs.rows))
                             .then(sigsSet => console.log('put in redis city sigs:', sigsSet))
                             .catch(err => new Error('prob with redis:', err))
                         sigs.rows.forEach(el => {

@@ -77,9 +77,11 @@ profRouter.get('/edit-profile/:message?*', guard, (req, res) => {
 profRouter.post('/edit-profile/', guard, (req, res) => {
     if (req.body.pass === req.body.passRep) {
         if (uif.mailValid(req.body.email) && uif.escComp(req.body.email)) {
-            redis.del('city' + req.session.isLoggedIn.city.toUpperCase())
+            if (req.session.isLoggedIn.city.toUpperCase() != uif.sanitizer(req.body.city).toUpperCase()) {
+                redis.del('city' + req.session.isLoggedIn.city.toUpperCase())
                 .then(delSigCities => console.log('depricated city data deleted:', req.session.isLoggedIn.city))
                 .catch(err => new Error('prob with redis:', err))
+            }
             redis.del('allSigs')
                 .then(delSigs => console.log('depricated data deleted:', delsSigs))
                 .catch(err => new Error('prob with redis:', err))

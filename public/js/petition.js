@@ -8,6 +8,7 @@
             setTimeout(function() {
                 var canvas = $('#signature');
                 if (canvas.length > 0) {
+                    var login = $('.indi-address').length;
                     var ctx = canvas[0].getContext('2d');
                     var scaleY = 100 / canvas.height();
                     var scaleX = 500 / canvas.width();
@@ -18,6 +19,12 @@
                     var signInput = $('[name="signature"]');
                     var xBuff, yBuff, x, y;
                     ctx.scale(scaleX, scaleY);
+
+                    if (login) {
+                        $(window).scroll(function(e) {
+                            cOt = canvas.offset().top - $(e.target).scrollTop();
+                        })
+                    }
 
                     $('[name="petition-submit"]')
                         .on('mousedown', function() {

@@ -3,6 +3,8 @@ const signRouter = express.Router()
 const redis = require('../redis')
 const { guard, notSigned, hasSigned } = require('../middleware')
 const { db } = require('../index')
+const { formatSigs } = require('../utility/dbformatter')
+
 // const db = require('../__mocks__/db');  ////// for testing change to this module
 
 signRouter.get('/sign/', guard, notSigned, (req, res) => {
@@ -47,7 +49,7 @@ signRouter.get('/signed/', guard, hasSigned, (req, res) => {
     .then((sigs) => {
         if (sigs.rows.length > 0) {
             sigDate = new Date(sigs.rows[0].created_at);
-            sigs.rows[0].created_at = `signed ${sigDate.getMonth()} / ${sigDate.getDate()} / ${sigDate.getFullYear()} at ${sigDate.getHours()}:${sigDate.getMinutes()}`;
+            sigs.rows[0].created_at = `signed ${sigDate.getMonth()}/${sigDate.getDate()}/${sigDate.getFullYear()} at ${sigDate.getHours()}:${sigDate.getMinutes()}`;
         }
         res.render('signed', {
             layout:'petitionAll',
@@ -76,13 +78,7 @@ signRouter.get('/signers/', guard, hasSigned, (req, res) => {
                 db.getSignatureJoinAll()
                 .then(sigs => {
                     if (sigs.rows.length > 0) {
-                        sigs.rows.forEach(el => {
-                            sigDate = new Date(el.created_at);
-                            el.created_at = `signed ${sigDate.getMonth()} / ${sigDate.getDate()} / ${sigDate.getFullYear()}`;
-                            if (el.age === 0 || el.age === null) {
-                                el.age = ''
-                            }
-                        })
+                        sigs.rows = formatSigs(sigs.rows)
                     }
                     redis.setex('allSigs', 120, JSON.stringify(sigs.rows))
                         .then(sigsSet => console.log('put in redis signers:', sigsSet))
@@ -118,15 +114,7 @@ signRouter.get('/signers/:city', guard, hasSigned, (req, res) => {
                 .then(sigs => {
                     if (sigs.rows.length > 0) {
                         var city = sigs.rows[0].city.toUpperCase();
-                        sigs.rows.forEach(el => {
-                            delete el.city;
-                            let sigDate = new Date(el.created_at);
-                            el.created_at = `signed ${sigDate.getMonth()} / ${sigDate.getDate()} / ${sigDate.getFullYear()}`;
-                            if (el.age === 0 || el.age === null) {
-                                el.age = ''
-                            }
-                            return el;
-                        })
+                        sigs.rows = formatSigs(sigs.rows, true);
                         redis.setex('city' + city.toUpperCase(), 120, JSON.stringify(sigs.rows))
                         .then(sigsSet => console.log('put in redis city sigs:', sigsSet))
                         .catch(err => new Error('prob with redis:', err))

@@ -1,6 +1,6 @@
 <div class="content container">
-    <p><h1>we petition against anything!</h1></p>
-    <h2>we'd love to know more about you!</h2>
+    <p><h1>we petition against evil!</h1></p>
+    <h2>and we'd love to know more about you! help the cause and tell us some things.</h2>
     <form class="" action="/profile/" method="post" enctype="application/x-www-form-urlencoded">
         <input type="text" name="city" placeholder="eg. Sao Paolo">
         <label for="city">your city</label>
@@ -9,7 +9,7 @@
         <input type="text" name="userUrl" placeholder="http..">
         <label for="userUrl">your website</label>
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
-        <button type="submit" name="profile-submit">continue</button>
+        <button class="navAnimTrig" type="submit" name="profile-submit">continue</button>
     </form>
     <p class="message">{{msg}}</p>
     <p>in case you don't like to share, feel free to just continue..</p>

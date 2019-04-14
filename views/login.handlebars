@@ -1,6 +1,6 @@
 
 <div class="content container">
-    <p><h1>we petition against anything!</h1></p>
+    <p><h1>we petition against evil!</h1></p>
     <h2>please login to sign the petition</h2>
     <form class="" action="/login/" method="post" enctype="application/x-www-form-urlencoded">
         <input type="email" placeholder="eg. dori@gray.me" name="email">
@@ -8,10 +8,10 @@
         <input type="password" name="pass">
         <label for="pass">your password *</label>
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
-        <button type="submit" name="register-submit"><i class="fas fa-sign-in-alt"></i> login</button>
+        <button class="navAnimTrig" type="submit" name="register-submit"><i class="fas fa-sign-in-alt"></i> login</button>
     </form>
     <p class="message">{{msg}}</p>
-    <p>or would you like to register? <a href="/register">go to register page</a> </p>
+    <p>or would you like to register? <a class="navAnimTrig" href="/register">go to register page</a> </p>
 </div>
 
 <div class="line"></div>

@@ -7,9 +7,9 @@
     {{/if}}
     {{#name}}
         {{#if userUrl}}
-            <h3><a href="{{userUrl}}" target="_blank">{{firstName}} {{lastName}}</a> {{age}} <a href="signers/{{city}}">{{city}}</a> - {{created_at}}</h3>
+            <h3><a href="{{userUrl}}" target="_blank">{{firstName}} {{lastName}}</a> {{age}} <a class="navAnimTrig" href="signers/{{city}}">{{city}}</a> - {{created_at}}</h3>
         {{else}}
-            <h3>{{firstName}} {{lastName}} {{age}} <a href="signers/{{city}}">{{city}}</a> - {{created_at}}</h3>
+            <h3>{{firstName}} {{lastName}} {{age}} <a class="navAnimTrig" href="signers/{{city}}">{{city}}</a> - {{created_at}}</h3>
         {{/if}}
     {{/name}}
 
@@ -19,9 +19,9 @@
 <div class="container">
     <p><h1>have a nice movement, anyway!</h1></p>
     {{#if aggregCity}}
-    <p><a href="/signers">wanna go back to all signees?</a></p>
+    <p><a class="navAnimTrig" href="/signers">wanna go back to all signees?</a></p>
     {{/if}}
-    <p><a href="/signed">wanna see your signature again?</a></p>
+    <p><a class="navAnimTrig" href="/signed">wanna see your signature again?</a></p>
 </div>
 
 <div class="line"></div>

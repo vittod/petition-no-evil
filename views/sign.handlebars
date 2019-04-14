@@ -1,7 +1,7 @@
 <div class="container">
     <div class="introduction">
         <p><h1>hey you.. join the cause!</h1></p>
-        <h2>we petition against anything!</h2>
+        <h2>we petition to destroy all evil!</h2>
     </div>
     <div class="indi-address">
         <em><h4>Hello {{user.first}} {{user.last}}. to support the movement you need to sign here..</h4> </em>
@@ -12,7 +12,7 @@
             <canvas id="signature" width="500" height="100"></canvas>
             <label for="signature">sign please (double tab to reset field..)</label>
             <input type="hidden" name="_csrf" value="{{csrfToken}}">
-            <button type="submit" name="petition-submit">submit</button>
+            <button class="navAnimTrig" type="submit" name="petition-submit">submit</button>
         </form>
     </div>
 </div>

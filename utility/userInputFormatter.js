@@ -39,12 +39,12 @@ exports.mailValid = (email) => {
 exports.saniStrToNum = (str) => {
     let test = /[0-9]/
     if (typeof str === 'string') {
-        let result = str != '' ? str.split('').map(el => test.test(el) ? el : '').join('') : 0;
-        return result === '' ? +0 : +result
+        let result = str != '' ? str.split('').map(el => test.test(el) ? el : '').join('') : null;
+        return result === '' ? null : +result
     } else if (typeof str === 'number') {
         return str.split('').filter(el => test.test(el) ? el : '').join('')
     } else {
-        return 0
+        return null
     }
 }
 

@@ -1,5 +1,6 @@
 * {
     font-family: monospace;
+    font-size: 14px;
     color: ghostwhite;
 }
 
@@ -52,7 +53,7 @@ section {
 }
 
 .container {
-    width: 55vw;
+    width: 80%;
     background: rgba(73, 190, 183, 0.1);
     border-radius: 10px;
     padding-bottom: 3rem;
@@ -61,6 +62,11 @@ section {
     align-items: center;
     display: flex;
     text-align: center;
+}
+
+a {
+    color: DarkGoldenrod;
+    text-decoration: none;
 }
 
 .logo {
@@ -74,6 +80,7 @@ section {
 }
 .logo a {
     display: flex;
+    align-items: center;
     text-decoration: none;
 }
 a:focus {
@@ -88,6 +95,7 @@ section a:active {
 }
 .logout h4 {
     display: flex;
+    align-items: center;
 }
 
 .logout-link {
@@ -101,6 +109,22 @@ section a:active {
     margin: 10px;
 }
 
+.fadeIn {
+    transform: translateY(0);
+    transition-property: transform;
+    transition-duration: 800ms;
+}
+
+.fadeOut {
+    transform: translateY(-5000px);
+    transition-property: transform;
+    transition-duration: 450ms;
+}
+
+section > * {
+    transform: translateY(-5000px);
+}
+
 .signers > h3 > a {
     margin: 0;
 }
@@ -111,6 +135,7 @@ form {
     flex-direction: column;
     align-items: center;
     margin: 10px;
+    width: 65%;
 }
 
 input {
@@ -156,13 +181,15 @@ canvas {
     border-radius: 10px;
     cursor: crosshair;
     box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 500px;
+    height: auto;
 }
 #canvas-dot {
     display: none;
 }
 
 button {
-    /* width: 80px; */
     background: DarkGoldenrod;
     border: none;
     border-radius: 3px;
@@ -182,11 +209,12 @@ button:active {
 }
 
 .signers button {
+    color: DarkGoldenrod;
     min-width: 350px;
     background: none;
     box-shadow: none;
-    text-decoration: underline;
-    font-size: 13px;
+    text-decoration: none;
+    font-size: 14px;
     opacity: 1;
     cursor: pointer;
 }
@@ -210,23 +238,40 @@ p.message {
     color: #facf5a;
 }
 
+.user-sig {
+    width: 90%;
+}
+
 .user-sig > img{
+    width: 100%;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.3);
 }
 
 h1 {
-    font-size: 2rem;
+    font-size: 2.3rem;
 }
 
+h2 {
+    font-size: 1.5rem;
+}
+
+
+
+
+
+/////////////////////////////////////////////////////////// media queries
 @media (max-width: 925px) {
     form, input {
         width: 95%;
     }
-    canvas, .user-sig > img {
+    canvas, .user-sig{
         width: 100%;
         height: auto;
+    }
+    .container, .content .container {
+        width: 90% !important;
     }
 
 }

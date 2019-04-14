@@ -1,9 +1,9 @@
 
 <div class="container">
-    <p><h1>are you sure you want to delete your account?</h1></p> 
+    <p><h1>are you (evil and) sure you want to delete your account?</h1></p>
     <form class="" action="/delete-account/" method="post" enctype="application/x-www-form-urlencoded">
-        <button type="submit" name="delete" value="account"><i class="fas fa-times-circle"></i> delete</button>
-        <a href="/signed">or would you like to go back?</a>
+        <button class="navAnimTrig" type="submit" name="delete" value="account"><i class="fas fa-times-circle"></i> delete</button>
+        <a href="/signed" class="navAnimTrig">or would you like to go back? (there might be hope for you..)</a>
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
     </form>
 </div>

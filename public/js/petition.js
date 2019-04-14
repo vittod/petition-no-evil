@@ -33,7 +33,6 @@
 
                     canvas
                         .on('mousedown', function(e) {
-
                         xBuff = e.clientX - cOl;
                         yBuff = e.clientY - cOt;
                         ctx.beginPath();
@@ -76,11 +75,12 @@
 
                     $(document)
                         .on('mouseup', function() {
+                            console.log('happen');
                             ctx.closePath();
                             brake = true;
                         })
                         .on('touchend', function() {
-                            canvas.trigger('mouseup', new MouseEvent('mouseup', {}))
+                            canvas.trigger('mouseup')
                         })
 
                 }
